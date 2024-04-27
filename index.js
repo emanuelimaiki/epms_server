@@ -1,28 +1,32 @@
-const express = require("express");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const app = express();
+const { app, server, socketManager } = require("./socket/socketio");
 const userRoutes = require("./routes/userRoutes");
-const { auth } = require("express-openid-connect");
-const auth_config = require("./config/auth");
+const authRoutes = require("./routes/authRoutes");
+const authenticateToken = require("./middleware/authMiddleware");
 
 // Configure body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//authentication auth0
-app.use(auth(auth_config.auth0));
+// Include routes
+app.use("/api/user", authenticateToken, userRoutes);
+app.use("/api/auth", authRoutes);
 
-app.get("/", (req, res) => {
-  res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
-});
+// socketio initialization and connection check
+const onConnection = (socket) => {
+  connection(socketManager.io, socket);
+};
 
-// Include user registration routes
-app.use("/api/user", userRoutes);
+// Apply middleware to the io instance
+// socketManager.use(socketAuth);
+// socketManager.applyMiddleware();
+
+socketManager.io.on("connection", onConnection);
 
 // Start the server
-app.listen(process.env.APP_PORT, () => {
+server.listen(process.env.APP_PORT, () => {
   // mongoose connection
   mongoose
     .connect(

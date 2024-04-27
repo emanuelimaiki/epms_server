@@ -8,7 +8,6 @@ const permissionsSchema = new mongoose.Schema({
   module: {
     type: String,
     required: true,
-    unique: true,
   },
   read: {
     type: Boolean,

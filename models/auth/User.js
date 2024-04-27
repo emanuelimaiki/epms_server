@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const bcrypt = require("bcryptjs");
 // Define the User schema
 const userSchema = new mongoose.Schema(
   {
@@ -20,10 +20,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    avater: {
+    avatar: {
       type: String,
     },
-    role_id: {
+    role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Role",
       required: false,
@@ -32,6 +32,8 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "WorkflowState",
     },
+    isEmailVerified: { type: Boolean, default: false },
+    emailVerificationToken: { type: String, required: false },
     status: {
       type: Number,
       required: true,
@@ -41,21 +43,24 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    verified: {
-      type: Boolean,
-    },
-    otp: {
-      type: String,
-      default: undefined,
-    },
-    otp_expires_in: {
-      type: Date,
-    },
+    otp: { type: String, required: false },
+    otpExpiry: { type: Date, required: false },
   },
   {
     timestamps: true,
   }
 );
+
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 8);
+  }
+  next();
+});
+
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 // Create the User model
 const user = mongoose.model("User", userSchema);
