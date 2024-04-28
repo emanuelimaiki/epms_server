@@ -2,17 +2,17 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { app, server, socketManager } = require("./socket/socketio");
-const userRoutes = require("./routes/userRoutes");
-const authRoutes = require("./routes/authRoutes");
-const authenticateToken = require("./middleware/authMiddleware");
 
+const apiRoutes = require("./routes/apiRoutes");
+const { HTTPlogger, logger } = require("./logger");
+
+app.use(HTTPlogger);
 // Configure body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Include routes
-app.use("/api/user", authenticateToken, userRoutes);
-app.use("/api/auth", authRoutes);
+// Use the API routes
+app.use("/api", apiRoutes);
 
 // socketio initialization and connection check
 const onConnection = (socket) => {
@@ -28,6 +28,7 @@ socketManager.io.on("connection", onConnection);
 // Start the server
 server.listen(process.env.APP_PORT, () => {
   // mongoose connection
+
   mongoose
     .connect(
       process.env.MONGO_URI || //use this if using mongodb remote
@@ -38,9 +39,10 @@ server.listen(process.env.APP_PORT, () => {
       const host = conn.connections[0].host;
       const dbName = conn.connections[0].name;
 
-      console.log(`Connected to MongoDB on host: ${host}, database: ${dbName}`);
+      logger.info(`Connected to MongoDB on host: ${host}, database: ${dbName}`);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => logger.error(err));
+
   // end mongoose connection
-  console.log(`listening on *:${process.env.APP_PORT}`);
+  logger.info(`listening on *:${process.env.APP_PORT}`);
 });

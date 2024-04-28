@@ -8,9 +8,6 @@ const checkPermission = require("../middleware/roleMiddleware");
 // Define the registration route
 router.post("/register", userController.registerUser);
 
-router.get("/profile", requiresAuth(), (req, res) => {
-  res.send(JSON.stringify(req.oidc.user));
-});
 router.get(
   "/some-resource",
   checkPermission("some-resource", "read"),
