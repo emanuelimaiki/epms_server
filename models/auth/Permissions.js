@@ -30,8 +30,5 @@ const permissionsSchema = new mongoose.Schema({
     default: false,
   },
 });
-permissionsSchema.index(
-  { role: 1, module: 1 },
-  { unique: true, partialFilterExpression: { terminated: false } }
-);
+permissionsSchema.index({ role: 1, module: 1 }, { unique: true });
 module.exports = mongoose.model("Permission", permissionsSchema);

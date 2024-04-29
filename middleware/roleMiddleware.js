@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const Role = require("../models/auth/roles");
+const User = require("../models/auth/User"); // Make sure to require the User model
 const Permission = require("../models/auth/Permissions");
 
 const checkPermission = (module, action) => {
@@ -7,15 +7,18 @@ const checkPermission = (module, action) => {
     try {
       const token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id;
+      const userId = decoded._id;
+      // Find the user by ID to get their single role
+      const user = await User.findById(userId).populate("role").exec();
+      if (!user || !user.role) {
+        return res.status(403).json({
+          message: "Access denied: No role found for this user.",
+        });
+      }
 
-      // Assuming you have a way to find a user's roles based on their ID
-      const userRoles = await User.findById(userId).populate("roles").exec();
-      const roleIds = userRoles.roles.map((role) => role._id);
-
-      // Check if any of the user's roles have the required permission
+      // Check if the user's role has the required permission
       const permission = await Permission.findOne({
-        role: { $in: roleIds },
+        role: user.role._id,
         module: module,
         [action]: true,
       });
@@ -28,6 +31,7 @@ const checkPermission = (module, action) => {
 
       next();
     } catch (error) {
+      console.error(error);
       res.status(401).json({ message: "Authorization failed" });
     }
   };

@@ -4,7 +4,7 @@ const { sendVerificationEmail } = require("../utils/emailHelper");
 
 exports.register = async (req, res) => {
   try {
-    const { firstname, lastname, email, phone, password } = req.body;
+    const { firstname, lastname, email, phone, password, role } = req.body;
     const emailVerificationToken = jwt.sign({ email }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
@@ -14,6 +14,7 @@ exports.register = async (req, res) => {
       email,
       phone,
       password,
+      role,
       emailVerificationToken,
     });
 
