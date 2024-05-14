@@ -11,6 +11,7 @@ const LandlordSchema = new mongoose.Schema(
     middle_name: String,
     last_name: {
       type: String,
+      required: true
     },
     id_number: {
       type: String,
@@ -32,6 +33,7 @@ const LandlordSchema = new mongoose.Schema(
     zone: {
       type: Schema.Types.ObjectId,
       ref: 'Zone',
+      required: true
     },
     plots: [
       {
