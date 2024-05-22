@@ -1,19 +1,21 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema(
   {
-    name: {type: String, required: true, unique: true},
+    name: { type: String, required: true, unique: true },
     landlord: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Landlord',
+      ref: "Landlord",
       required: true,
     },
     zone: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Zone',
+      ref: "Zone",
+      required: true,
     },
     title_deed_number: {
       type: String,
+      unique: true,
     },
     type: {
       type: String,
@@ -26,6 +28,7 @@ const propertySchema = new mongoose.Schema(
     plot_no: {
       type: String,
       required: true,
+      unique: true,
     },
     longitude: {
       type: String,
@@ -43,19 +46,19 @@ const propertySchema = new mongoose.Schema(
     floorplans: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Floorplan',
+        ref: "Floorplan",
       },
     ],
     chargeables: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Chargeables',
+        ref: "Chargeables",
       },
     ],
     payment_schedules: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'PaymentSchedule',
+        ref: "PaymentSchedule",
       },
     ],
     expected_landlord_payout: {
@@ -67,9 +70,9 @@ const propertySchema = new mongoose.Schema(
       default: 0,
     },
   },
-  {timestamps: true},
+  { timestamps: true }
 );
 
-const Property = mongoose.model('Property', propertySchema);
+const Property = mongoose.model("Property", propertySchema);
 
 module.exports = Property;

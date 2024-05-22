@@ -1,5 +1,19 @@
 const mongoose = require("mongoose");
 
+const waterReadingSchema = new mongoose.Schema(
+  {
+    reading_date: {
+      type: Date,
+      default: Date.now(),
+    },
+    reading: {
+      type: Number,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
 const floorplanSchema = new mongoose.Schema(
   {
     property: {
@@ -14,11 +28,12 @@ const floorplanSchema = new mongoose.Schema(
     yearlyincome: { type: Number, default: "" },
     marketvalue: { type: Number, default: "" },
     isoccupied: { type: Boolean, default: false },
-    tenant: { type: mongoose.Schema.ObjectId, default: undefined },
+    tenant: { type: mongoose.Schema.ObjectId, ref: "Tenant", default: null },
     elec_meter: { type: String, default: "" },
     water_meter: { type: String, default: 0 },
     last_water_reading: { type: Number, default: "" },
     current_water_reading: { type: Number, default: "" },
+    water_readings: [waterReadingSchema],
     status: { type: String, default: 0 },
   },
   { timestamps: true }

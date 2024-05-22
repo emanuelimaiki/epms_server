@@ -9,7 +9,7 @@ const TenantHistoriesSchema = new Schema(
       ref: "Tenants",
       required: true,
     },
-    house: {
+    floorplan: {
       type: Schema.Types.ObjectId,
       ref: "Floorplan",
       required: true,
@@ -23,6 +23,7 @@ const TenantHistoriesSchema = new Schema(
     },
     status: {
       type: String,
+      enum: ["Active", "Vacated"],
       default: "Active", //can be active or vacated
     },
     remarks: {
